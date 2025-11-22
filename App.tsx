@@ -1,8 +1,10 @@
+
 import React, { useState } from 'react';
 import { Message } from './types';
 import UserInterface from './components/UserInterface';
 import OperatorDashboard from './components/OperatorDashboard';
 import { Laptop2, Smartphone, Sparkles } from 'lucide-react';
+import { INITIAL_GREETING } from './localConfig';
 
 const App: React.FC = () => {
   // Initialize with Sage's opening line
@@ -10,7 +12,7 @@ const App: React.FC = () => {
     {
       id: 'init-1',
       role: 'assistant',
-      content: "Hey.\n\nI’m really glad you’re here.\n\nBefore we get into anything heavy…\nwhat do you usually come to someone for —\nconfidence, clarity, venting, or just someone who listens without making it weird?",
+      content: INITIAL_GREETING,
       timestamp: Date.now(),
       status: 'approved'
     }
