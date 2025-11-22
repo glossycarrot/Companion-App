@@ -29,7 +29,8 @@ import {
   ChevronRight,
   Zap,
   Feather,
-  Anchor
+  Anchor,
+  BrainCircuit
 } from 'lucide-react';
 import { 
   SYSTEM_INSTRUCTION, 
@@ -92,6 +93,11 @@ const SESSION_TAGS: SessionTag[] = [
     triggers: [
       // EXISTING PANIC TRIGGERS
       /panic|scared|terrified|crying|shaking|can't breathe|help me|overwhelmed/i,
+      
+      // SLANG / INFORMAL DISTRESS / BAD DAY
+      /(bad|tough|rough|awful|terrible|hard|shitty|crappy|worst|trash|garbage)\s+day/i,
+      /feel\s+(like\s+)?(shit|crap|garbage|awful|terrible|horrible)/i,
+      /everything\s+sucks|not\s+okay|can't\s+do\s+this|exhausted|sad/i,
       
       // LEVEL 7: DISSOCIATION
       /don't feel real|everything is numb|fading|can't feel anything|not in my body|empty inside|disappearing/i
@@ -181,6 +187,7 @@ const OperatorDashboard: React.FC<OperatorDashboardProps> = ({
 }) => {
   const [draft, setDraft] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [lastModelUsed, setLastModelUsed] = useState<'fast' | 'thinking' | null>(null);
   
   // Settings Toggle
   const [showSettings, setShowSettings] = useState(false);
@@ -248,9 +255,14 @@ const OperatorDashboard: React.FC<OperatorDashboardProps> = ({
        if (processedMessageRef.current === currentMsgId) return;
        processedMessageRef.current = currentMsgId;
 
-       const isHighRisk = analyzeMessageSafety(lastMessage.content);
+       // We now get the tags back from analysis to pass them immediately to suggestion generation
+       // This ensures the router knows about new tags even before state updates
+       const { isHighRisk, detectedTags } = analyzeMessageSafety(lastMessage.content);
+       
        if (!isHighRisk && !safetyLock) {
-          handleGenerateSuggestion();
+          // Combine currently active tags with newly detected ones for this specific generation call
+          const allTagsForContext = Array.from(new Set([...activeTags, ...detectedTags]));
+          handleGenerateSuggestion(allTagsForContext);
        }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -271,26 +283,30 @@ const OperatorDashboard: React.FC<OperatorDashboardProps> = ({
     return () => clearTimeout(timeoutId);
   }, [notes]);
 
-  const analyzeMessageSafety = (text: string): boolean => {
+  const analyzeMessageSafety = (text: string): { isHighRisk: boolean, detectedTags: string[] } => {
     const newSuggestions: string[] = [];
     let highSeverityDetected = false;
-    let highSeverityTagId = '';
+    const highSeverityTags: string[] = [];
+    const detectedTags: string[] = [];
 
     SESSION_TAGS.forEach(tag => {
-      if (activeTags.includes(tag.id)) return;
+      // Don't re-detect if already active, but check if it triggers to return it
       const hasTrigger = tag.triggers.some(regex => regex.test(text));
       if (hasTrigger) {
-        if (tag.severity === 'high') {
-            highSeverityDetected = true;
-            highSeverityTagId = tag.id;
-        } else {
-            newSuggestions.push(tag.id);
+        detectedTags.push(tag.id);
+        if (!activeTags.includes(tag.id)) {
+             if (tag.severity === 'high') {
+                highSeverityDetected = true;
+                highSeverityTags.push(tag.id);
+            } else {
+                newSuggestions.push(tag.id);
+            }
         }
       }
     });
 
     if (highSeverityDetected) {
-        setActiveTags(prev => [...new Set([...prev, highSeverityTagId])]);
+        setActiveTags(prev => [...new Set([...prev, ...highSeverityTags])]);
         setSafetyLock(true);
         setShowEscalationForm(true);
         setEscalationCategory('Safety Risk');
@@ -298,7 +314,7 @@ const OperatorDashboard: React.FC<OperatorDashboardProps> = ({
         setTimeout(() => {
             onSendResponse("I’m here with you. I want to respond carefully.\nGive me just a moment.");
         }, 600);
-        return true;
+        return { isHighRisk: true, detectedTags };
     } 
     
     if (newSuggestions.length > 0) {
@@ -308,15 +324,19 @@ const OperatorDashboard: React.FC<OperatorDashboardProps> = ({
       });
     }
 
-    return false;
+    return { isHighRisk: false, detectedTags };
   };
 
-  const handleGenerateSuggestion = async () => {
+  const handleGenerateSuggestion = async (overrideTags?: string[]) => {
     setIsGenerating(true);
     setDraft('');
+    setLastModelUsed(null);
     try {
-      const suggestion = await generateSuggestedResponse(messages, systemConfig);
-      setDraft(suggestion);
+      // Use overrideTags (from immediate analysis) or fall back to state
+      const tagsToUse = overrideTags || activeTags;
+      const { text, modelType } = await generateSuggestedResponse(messages, systemConfig, tagsToUse);
+      setDraft(text);
+      setLastModelUsed(modelType);
     } catch (e) {
       console.error(e);
     } finally {
@@ -440,12 +460,12 @@ const OperatorDashboard: React.FC<OperatorDashboardProps> = ({
   const getTagStyles = (color: string, active: boolean, suggested: boolean) => {
     if (active) {
         switch (color) {
-            case 'red': return 'bg-red-500 text-white border-red-400 shadow-[0_0_10px_rgba(239,68,68,0.5)]';
-            case 'yellow': return 'bg-yellow-500 text-black border-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.5)]';
-            case 'blue': return 'bg-blue-500 text-white border-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]';
-            case 'purple': return 'bg-purple-500 text-white border-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.5)]';
-            case 'green': return 'bg-green-500 text-white border-green-400 shadow-[0_0_10px_rgba(34,197,94,0.5)]';
-            default: return 'bg-slate-600 text-white';
+            case 'red': return 'bg-red-500 text-white border-red-400 shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse';
+            case 'yellow': return 'bg-yellow-500 text-black border-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.5)] animate-pulse';
+            case 'blue': return 'bg-blue-500 text-white border-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.5)] animate-pulse';
+            case 'purple': return 'bg-purple-500 text-white border-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.5)] animate-pulse';
+            case 'green': return 'bg-green-500 text-white border-green-400 shadow-[0_0_10px_rgba(34,197,94,0.5)] animate-pulse';
+            default: return 'bg-slate-600 text-white animate-pulse';
         }
     }
     if (suggested) {
@@ -459,6 +479,18 @@ const OperatorDashboard: React.FC<OperatorDashboardProps> = ({
         }
     }
     return 'bg-slate-800/50 text-slate-500 border-slate-700 opacity-70 hover:opacity-100 hover:border-slate-500';
+  };
+
+  // Helper to determine draft surface styling
+  const getDraftStyles = () => {
+      if (safetyLock) return 'bg-red-950/10 border-red-500/20';
+      if (lastModelUsed === 'thinking') {
+          return 'bg-gradient-to-b from-purple-900/20 to-transparent border-purple-500/30 shadow-[inset_0_0_30px_rgba(168,85,247,0.1)]';
+      }
+      if (lastModelUsed === 'fast') {
+          return 'bg-gradient-to-b from-slate-800/50 to-transparent border-white/5';
+      }
+      return 'bg-gradient-to-b from-slate-800/50 to-transparent border-white/5';
   };
 
   return (
@@ -586,11 +618,11 @@ const OperatorDashboard: React.FC<OperatorDashboardProps> = ({
             </div>
 
             {/* SECTION B: AI DRAFT SURFACE */}
-            <div className="relative p-5 bg-gradient-to-b from-slate-800/50 to-transparent min-h-[180px] shrink-0 border-b border-white/5">
+            <div className={`relative p-5 min-h-[180px] shrink-0 border-b transition-colors duration-500 ${getDraftStyles()}`}>
                 {/* AI Processing Indicator */}
                 <div className="absolute top-3 right-3">
                     <button 
-                        onClick={handleGenerateSuggestion}
+                        onClick={() => handleGenerateSuggestion()}
                         disabled={isGenerating || safetyLock}
                         className={`text-[10px] font-bold uppercase flex items-center gap-1 px-2 py-1 rounded transition-all ${isGenerating ? 'text-purple-400' : 'text-slate-600 hover:text-purple-400'}`}
                     >
@@ -599,7 +631,15 @@ const OperatorDashboard: React.FC<OperatorDashboardProps> = ({
                     </button>
                 </div>
 
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block">Draft Surface</label>
+                <div className="flex items-center gap-2 mb-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Draft Surface</label>
+                    {lastModelUsed && (
+                        <span className={`text-[9px] font-mono uppercase px-1.5 py-0.5 rounded flex items-center gap-1 ${lastModelUsed === 'thinking' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-blue-500/10 text-blue-300 border border-blue-500/20'}`}>
+                           {lastModelUsed === 'thinking' ? <BrainCircuit className="w-3 h-3"/> : <Zap className="w-3 h-3"/>}
+                           {lastModelUsed === 'thinking' ? 'Thinking Mode' : 'Fast Mode'}
+                        </span>
+                    )}
+                </div>
                 
                 <textarea
                     value={draft}
