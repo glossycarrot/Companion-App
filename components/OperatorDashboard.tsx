@@ -47,6 +47,10 @@ const OperatorDashboard: React.FC<OperatorDashboardProps> = ({
   const [activePanel, setActivePanel] = useState<'settings' | 'notes' | null>(null);
   const [notes, setNotes] = useState(DEFAULT_NOTES_TEMPLATE);
   
+  // Auto-save state for notes
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  
   // Updated default config for the "Sage" persona
   const [systemConfig, setSystemConfig] = useState<SystemConfig>({
     systemInstruction: `⭐ SYSTEM PROMPT — “Sage” (Gender-Neutral Companion v1.1)
@@ -386,6 +390,19 @@ Never push.`,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draft]);
 
+  // Auto-save effect for notes
+  useEffect(() => {
+    if (notes === DEFAULT_NOTES_TEMPLATE && lastSaved === null) return;
+
+    setIsSaving(true);
+    const timeoutId = setTimeout(() => {
+      setLastSaved(new Date());
+      setIsSaving(false);
+    }, 1500);
+
+    return () => clearTimeout(timeoutId);
+  }, [notes]);
+
   const handleGenerateSuggestion = async () => {
     setIsGenerating(true);
     setDraft(''); // Clear previous draft while loading
@@ -475,9 +492,20 @@ Never push.`,
 
       {activePanel === 'notes' && (
         <div className="bg-slate-850 p-4 border-b border-slate-700 space-y-2 bg-black/20 animate-in slide-in-from-top-2 duration-200">
-           <div className="flex justify-between items-center text-xs text-rose-300 font-medium">
-              <span>Session Notes & Observations</span>
-              <span className="text-slate-500">Private</span>
+           <div className="flex justify-between items-center text-xs font-medium">
+              <span className="text-rose-300">Session Notes & Observations</span>
+              <span className={`transition-colors ${isSaving ? 'text-purple-400' : 'text-slate-500'}`}>
+                  {isSaving ? (
+                    <span className="flex items-center gap-1">
+                       <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse"/>
+                       Saving...
+                    </span>
+                  ) : lastSaved ? (
+                    `Saved ${lastSaved.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`
+                  ) : (
+                    'Private'
+                  )}
+              </span>
            </div>
            <textarea 
               value={notes}
