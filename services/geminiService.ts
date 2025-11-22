@@ -1,3 +1,4 @@
+
 import { GoogleGenAI } from "@google/genai";
 import { Message, SystemConfig } from "../types";
 
@@ -16,10 +17,14 @@ export const generateSuggestedResponse = async (
     const modelId = 'gemini-2.5-flash';
 
     // Filter only approved messages and the pending one for context
-    const contents = history.map((msg) => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.content }],
-    }));
+    const contents = history.map((msg) => {
+      // Map 'system' messages to 'user' role so the model sees them as input instructions/context
+      const role = (msg.role === 'user' || msg.role === 'system') ? 'user' : 'model';
+      return {
+        role: role,
+        parts: [{ text: msg.content }],
+      };
+    });
 
     const response = await ai.models.generateContent({
       model: modelId,

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Message } from './types';
+import { Message, Role } from './types';
 import UserInterface from './components/UserInterface';
 import OperatorDashboard from './components/OperatorDashboard';
 import { Laptop2, Smartphone, Sparkles } from 'lucide-react';
@@ -23,7 +23,7 @@ const App: React.FC = () => {
   // View mode for mobile/tablet: 'split' (desktop default), 'user', or 'operator'
   const [activeView, setActiveView] = useState<'user' | 'operator'>('user');
 
-  const addMessage = (role: 'user' | 'assistant', content: string) => {
+  const addMessage = (role: Role, content: string) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       role,
@@ -37,6 +37,15 @@ const App: React.FC = () => {
     if (role === 'user') {
        // Optionally play a sound or show a badge
     }
+  };
+
+  const handleSessionStart = (vibe: string, firstMessage: string) => {
+    // 1. Add System Context Message (Visible to Operator, Hidden from User)
+    const systemContext = JSON.stringify({ persona_vibe: vibe }, null, 2);
+    addMessage('system', systemContext);
+
+    // 2. Add Actual User Message
+    addMessage('user', firstMessage);
   };
 
   return (
@@ -101,6 +110,7 @@ const App: React.FC = () => {
              <UserInterface 
                 messages={messages} 
                 onSendMessage={(text) => addMessage('user', text)}
+                onSessionStart={handleSessionStart}
                 operatorTyping={operatorTyping}
               />
           </div>
