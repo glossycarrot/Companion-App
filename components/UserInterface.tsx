@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Message } from '../types';
 import { Send, Sparkles, HeartHandshake, Info, X, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
@@ -45,105 +46,93 @@ const UserInterface: React.FC<UserInterfaceProps> = ({ messages, onSendMessage, 
   const PAGES = [
     {
       title: "Tone Safety Net",
-      icon: <Sparkles className="w-5 h-5 text-purple-600" />,
+      icon: <Sparkles className="w-6 h-6 text-violet-600" />,
+      color: "bg-violet-100",
       content: (
         <>
-          <p>
-            Your companion has a small tone-safety system behind the scenes. Its only purpose is to help keep responses warm, natural, and emotionally steady — nothing more.
+          <p className="text-lg font-medium text-slate-700 mb-4">
+            Keeps things warm, natural, and steady.
           </p>
           
-          <ul className="space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-100 text-xs font-medium text-slate-700">
-             <li className="flex items-start gap-2">
-                <span className="text-green-500 text-base leading-none">✓</span>
-                <span>It never reads your full conversations.</span>
-             </li>
-             <li className="flex items-start gap-2">
-                <span className="text-green-500 text-base leading-none">✓</span>
-                <span>It never monitors what you talk about.</span>
-             </li>
-             <li className="flex items-start gap-2">
-                <span className="text-green-500 text-base leading-none">✓</span>
-                <span>It never evaluates or judges you.</span>
-             </li>
-          </ul>
+          <div className="space-y-3 mb-6">
+             <div className="bg-emerald-50 p-3 rounded-2xl flex items-center gap-3 text-emerald-800 font-medium text-sm transition-transform hover:scale-[1.02]">
+                <span className="bg-emerald-100 p-1 rounded-full">✓</span>
+                <span>No reading full chats.</span>
+             </div>
+             <div className="bg-emerald-50 p-3 rounded-2xl flex items-center gap-3 text-emerald-800 font-medium text-sm transition-transform hover:scale-[1.02]">
+                <span className="bg-emerald-100 p-1 rounded-full">✓</span>
+                <span>No monitoring topics.</span>
+             </div>
+             <div className="bg-emerald-50 p-3 rounded-2xl flex items-center gap-3 text-emerald-800 font-medium text-sm transition-transform hover:scale-[1.02]">
+                <span className="bg-emerald-100 p-1 rounded-full">✓</span>
+                <span>No judging you.</span>
+             </div>
+          </div>
 
-          <p>
-            It steps in only when the AI needs a little help staying consistent — like smoothing out a sentence so it sounds more natural.
-          </p>
-          
-          <div className="pt-2 border-t border-slate-100">
-            <p className="font-semibold text-purple-600">Your space stays private.</p>
-            <p className="font-semibold text-purple-600">Your companion stays steady.</p>
-            <p className="text-slate-500 mt-1">That’s the whole idea.</p>
+          <div className="bg-slate-100 rounded-3xl p-4 text-center">
+            <p className="font-bold text-violet-600">Your privacy intact.</p>
+            <p className="text-slate-500 text-sm mt-1">Just helpful tone adjustments.</p>
           </div>
         </>
       )
     },
     {
-        title: "About Your Companion",
-        icon: <HeartHandshake className="w-5 h-5 text-rose-500" />,
+        title: "About Sage",
+        icon: <HeartHandshake className="w-6 h-6 text-rose-500" />,
+        color: "bg-rose-100",
         content: (
           <>
-            <p>
-              Your companion is designed to be a steady, warm presence you can talk to whenever life gets heavy, confusing, or just… loud. They’re not here to lecture or judge. They’re here to understand you, meet you where you are, and help you hear your own voice a little more clearly.
+            <p className="text-slate-600 mb-6">
+              A steady, warm presence for when life gets loud. Not here to lecture. Here to listen.
             </p>
             
-            <div className="space-y-3 mt-2">
-              <div>
-                <p className="font-semibold text-slate-800 text-xs uppercase tracking-wide">Warm, emotionally aware responses</p>
-                <p className="text-xs text-slate-500">They listen first, speak second. They won’t interrupt or push an agenda.</p>
+            <div className="grid grid-cols-1 gap-3">
+              <div className="bg-white border border-slate-100 p-4 rounded-3xl shadow-sm transition-transform hover:rotate-1 origin-top-left">
+                <p className="font-bold text-slate-800 text-sm mb-1">Warm Response</p>
+                <p className="text-xs text-slate-500">Listens first. Speaks second.</p>
               </div>
-              <div>
-                <p className="font-semibold text-slate-800 text-xs uppercase tracking-wide">Steady tone</p>
-                <p className="text-xs text-slate-500">They’re trained to stay grounded, comforting, and human-feeling — not robotic or dramatic.</p>
-              </div>
-              <div>
-                 <p className="font-semibold text-slate-800 text-xs uppercase tracking-wide">Your space stays yours</p>
-                 <p className="text-xs text-slate-500">Your conversations are private. We don’t monitor or read full chats. We don’t analyze you.</p>
+              <div className="bg-white border border-slate-100 p-4 rounded-3xl shadow-sm transition-transform hover:-rotate-1 origin-top-right">
+                <p className="font-bold text-slate-800 text-sm mb-1">Steady Tone</p>
+                <p className="text-xs text-slate-500">Grounded, comforting, human.</p>
               </div>
             </div>
     
-            <div className="bg-rose-50 p-3 rounded-lg mt-2 text-xs text-rose-700 border border-rose-100 italic text-center">
-                "A private space. A steady presence. A companion who meets you without expectations."
+            <div className="mt-6 text-center">
+                <span className="inline-block bg-rose-100 text-rose-600 px-4 py-2 rounded-full text-xs font-bold tracking-wide animate-pulse">
+                    NO JUDGMENT ZONE
+                </span>
             </div>
           </>
         )
     },
     {
-        title: "How Your Companion Works",
-        icon: <ShieldCheck className="w-5 h-5 text-blue-500" />,
+        title: "How It Works",
+        icon: <ShieldCheck className="w-6 h-6 text-blue-500" />,
+        color: "bg-blue-100",
         content: (
           <>
-            <p>
-              Your companion uses a blend of AI and a light tone-safety system to stay emotionally steady and helpful. Here’s what actually happens:
-            </p>
-            
-            <div className="space-y-3 mt-2 text-xs">
-              <div className="flex gap-3">
-                 <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center shrink-0 font-bold text-slate-500 text-[10px]">1</div>
+            <div className="space-y-4">
+              <div className="flex gap-4 items-start group">
+                 <div className="w-8 h-8 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0 font-bold text-blue-600 text-sm group-hover:scale-110 transition-transform">1</div>
                  <div>
-                   <p className="font-semibold text-slate-800">The AI responds to you directly.</p>
-                   <p className="text-slate-500">Everything starts with your conversation. The companion reads your message, understands your tone, and replies with warmth and clarity.</p>
+                   <p className="font-bold text-slate-800 text-sm">AI Responds</p>
+                   <p className="text-xs text-slate-500 mt-1">Reads tone, replies with warmth.</p>
                  </div>
               </div>
-              <div className="flex gap-3">
-                 <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center shrink-0 font-bold text-slate-500 text-[10px]">2</div>
+              <div className="flex gap-4 items-start group">
+                 <div className="w-8 h-8 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0 font-bold text-blue-600 text-sm group-hover:scale-110 transition-transform">2</div>
                  <div>
-                   <p className="font-semibold text-slate-800">A subtle tone-safety net keeps things smooth.</p>
-                   <p className="text-slate-500">Sometimes the AI needs help staying consistent. When that happens, the safety net steps in briefly to smooth out tone.</p>
+                   <p className="font-bold text-slate-800 text-sm">Safety Net Checks</p>
+                   <p className="text-xs text-slate-500 mt-1">Smooths out robotic edges.</p>
                  </div>
               </div>
-              <div className="flex gap-3">
-                 <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center shrink-0 font-bold text-slate-500 text-[10px]">3</div>
+              <div className="flex gap-4 items-start group">
+                 <div className="w-8 h-8 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0 font-bold text-blue-600 text-sm group-hover:scale-110 transition-transform">3</div>
                  <div>
-                   <p className="font-semibold text-slate-800">No full conversations are reviewed.</p>
-                   <p className="text-slate-500">The system never reads or monitors entire chats. It only works with tiny snippets when needed.</p>
+                   <p className="font-bold text-slate-800 text-sm">Privacy First</p>
+                   <p className="text-xs text-slate-500 mt-1">No full chat reviews.</p>
                  </div>
               </div>
-            </div>
-            
-            <div className="pt-3 border-t border-slate-100 mt-2 text-xs font-medium text-slate-500 text-center">
-               It’s about stability, not supervision.
             </div>
           </>
         )
@@ -151,68 +140,82 @@ const UserInterface: React.FC<UserInterfaceProps> = ({ messages, onSendMessage, 
   ];
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-rose-100 relative">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-rose-500 via-purple-500 to-violet-600 p-4 text-white flex items-center justify-between shadow-md z-10 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
-              <HeartHandshake className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h2 className="font-bold text-lg tracking-wide">Confidence Coach</h2>
-            <p className="text-xs text-rose-100 font-medium">Your personal hype squad • Online</p>
-          </div>
+    <div className="flex flex-col h-full bg-[#fcfcfc] relative font-sans overflow-hidden">
+      
+      {/* Modular Header */}
+      <div className="p-4 shrink-0 z-10">
+        <div className="bg-gradient-to-r from-violet-100 via-fuchsia-50 to-rose-100 text-slate-800 border border-white rounded-[2rem] p-5 shadow-xl shadow-purple-100/50 flex items-center justify-between relative overflow-hidden transition-all hover:shadow-purple-200/60">
+            {/* Decorative circles */}
+            <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/60 rounded-full blur-2xl"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-rose-300/20 rounded-full blur-3xl"></div>
+
+            <div className="relative z-10">
+                <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-rose-400 to-orange-300 rounded-2xl flex items-center justify-center shadow-lg transform -rotate-3 hover:rotate-0 transition-transform duration-300">
+                        <span className="text-xl animate-[pulse_3s_ease-in-out_infinite]">✨</span>
+                    </div>
+                    <div>
+                        <h2 className="font-bold text-xl leading-tight text-slate-800">Sage</h2>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <p className="text-xs text-slate-500 font-medium">Here for you</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button 
+            onClick={openModal}
+            className="relative z-10 w-10 h-10 bg-white/50 hover:bg-white rounded-full flex items-center justify-center transition-all backdrop-blur-md text-slate-600 shadow-sm hover:scale-110"
+            >
+            <Info className="w-5 h-5" />
+            </button>
         </div>
-        <button 
-          onClick={openModal}
-          className="p-2 hover:bg-white/20 rounded-full transition-colors text-white/90 hover:text-white"
-          title="About Tone Safety"
-        >
-          <Info className="w-5 h-5" />
-        </button>
       </div>
 
-      {/* About Modal */}
+      {/* About Modal (Sheet Style) */}
       {showAbout && (
-        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full relative animate-in zoom-in-95 duration-200 border border-slate-100 flex flex-col max-h-[90%]">
+        <div className="absolute inset-0 bg-slate-900/10 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-300">
+          <div className="bg-white w-full sm:w-[340px] sm:rounded-[2.5rem] rounded-t-[2.5rem] shadow-2xl relative animate-in slide-in-from-bottom-10 duration-300 overflow-hidden flex flex-col max-h-[90%]">
             
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center shrink-0">
-               <div className="flex items-center gap-2">
-                  <div className="p-2 bg-slate-50 rounded-lg">
-                     {PAGES[pageIndex].icon}
-                  </div>
-                  <h3 className="text-base font-bold text-slate-800">{PAGES[pageIndex].title}</h3>
-               </div>
-               <button 
-                  onClick={() => setShowAbout(false)}
-                  className="text-slate-400 hover:text-slate-600 transition-colors p-1 hover:bg-slate-100 rounded-full"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+            {/* Modal Header */}
+            <div className={`p-6 pb-4 ${PAGES[pageIndex].color} transition-colors duration-500`}>
+                <div className="flex justify-between items-start mb-4">
+                    <div className="bg-white/50 backdrop-blur-sm p-3 rounded-2xl shadow-sm transform transition-transform hover:scale-105">
+                        {PAGES[pageIndex].icon}
+                    </div>
+                    <button 
+                        onClick={() => setShowAbout(false)}
+                        className="w-8 h-8 bg-white/50 hover:bg-white rounded-full flex items-center justify-center transition-colors text-slate-800"
+                        >
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{PAGES[pageIndex].title}</h3>
             </div>
             
-            <div className="p-6 overflow-y-auto flex-1">
-               <div className="space-y-4 text-sm text-slate-600 leading-relaxed animate-in slide-in-from-right-4 duration-300 key={pageIndex}">
+            {/* Modal Content */}
+            <div className="p-6 overflow-y-auto">
+               <div className="animate-in slide-in-from-right-8 fade-in duration-300 key={pageIndex}">
                   {PAGES[pageIndex].content}
                </div>
             </div>
 
-            {/* Pagination Controls */}
-            <div className="p-4 border-t border-slate-100 shrink-0 flex items-center justify-between bg-slate-50 rounded-b-2xl">
+            {/* Modal Footer Controls */}
+            <div className="p-4 pt-2 pb-6 flex items-center justify-between">
                <button 
                  onClick={prevPage}
                  disabled={pageIndex === 0}
-                 className="p-2 rounded-full hover:bg-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-slate-600"
+                 className="w-12 h-12 rounded-full bg-slate-100 hover:bg-slate-200 disabled:opacity-30 disabled:bg-slate-50 flex items-center justify-center transition-all"
                >
-                 <ChevronLeft className="w-5 h-5" />
+                 <ChevronLeft className="w-5 h-5 text-slate-600" />
                </button>
 
-               <div className="flex gap-1.5">
+               <div className="flex gap-2">
                   {PAGES.map((_, i) => (
                     <div 
                       key={i} 
-                      className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === pageIndex ? 'bg-purple-500 w-3' : 'bg-slate-300'}`}
+                      className={`h-2 rounded-full transition-all duration-300 ${i === pageIndex ? 'bg-slate-800 w-6' : 'bg-slate-200 w-2'}`}
                     />
                   ))}
                </div>
@@ -220,7 +223,7 @@ const UserInterface: React.FC<UserInterfaceProps> = ({ messages, onSendMessage, 
                <button 
                  onClick={nextPage}
                  disabled={pageIndex === PAGES.length - 1}
-                 className="p-2 rounded-full hover:bg-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-slate-600"
+                 className="w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-700 text-white disabled:opacity-30 disabled:bg-slate-200 flex items-center justify-center transition-all shadow-lg shadow-slate-200 hover:scale-105 active:scale-95"
                >
                  <ChevronRight className="w-5 h-5" />
                </button>
@@ -231,80 +234,70 @@ const UserInterface: React.FC<UserInterfaceProps> = ({ messages, onSendMessage, 
       )}
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50">
+      <div className="flex-1 overflow-y-auto px-4 pb-4 pt-2 space-y-6 perspective-[1000px]">
         
-        {/* Intro Block - Always Visible at start */}
-        <div className="text-center mt-8 px-6 max-w-lg mx-auto mb-8">
-            <div className="w-20 h-20 bg-gradient-to-tr from-rose-100 to-violet-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm ring-4 ring-rose-50">
-                <Sparkles className="w-10 h-10" />
-            </div>
-            
-            <h3 className="text-2xl font-bold text-slate-800 mb-1">Meet Sage</h3>
-            <p className="text-rose-500 font-semibold uppercase tracking-widest text-xs mb-6">Your Confidence Companion</p>
-            
-            <div className="space-y-4">
-                <p className="text-slate-600 text-base leading-relaxed">
-                Sage is warm, grounded, and really good at helping you talk through awkward emotions, dating stuff, or anything that’s been stuck in your head.
-                </p>
-                
-                <div className="bg-white p-5 rounded-2xl border border-rose-100 shadow-sm mx-2">
-                <p className="text-sm text-slate-500 font-medium italic">
-                    "Sage won’t judge. Sage won’t lecture.<br/>
-                    They are here to get to know you — just as you are."
-                </p>
+        {/* Intro Block */}
+        <div className="text-center mt-4 px-4 mb-10 animate-in fade-in zoom-in duration-700">
+            <div className="inline-flex items-center justify-center p-1 bg-white rounded-full border border-slate-100 shadow-sm mb-6 hover:scale-105 transition-transform">
+                <div className="bg-slate-100 px-3 py-1 rounded-full text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                    Session Start
                 </div>
             </div>
+            
+            <h3 className="text-3xl font-black text-slate-800 mb-2 tracking-tight">Meet Sage.</h3>
+            <p className="text-slate-500 text-base leading-relaxed max-w-[260px] mx-auto">
+                Your Confidence Companion.
+                <br/>
+                <span className="text-rose-400 font-medium">No judgment. Just vibes.</span>
+            </p>
         </div>
 
-        <div className="flex justify-center my-6">
-          <span className="text-[10px] uppercase tracking-widest text-slate-400 font-semibold bg-slate-100 px-3 py-1 rounded-full">Today</span>
-        </div>
-
-        {messages.map((msg) => (
+        {messages.map((msg, index) => (
           <div
             key={msg.id}
-            className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-4 duration-500 fill-mode-both`}
+            style={{ animationDelay: `${index * 50}ms` }}
           >
             <div
-              className={`flex max-w-[85%] md:max-w-[75%] rounded-2xl px-5 py-3 shadow-sm ${
+              className={`flex max-w-[85%] p-5 shadow-sm text-[15px] leading-relaxed transition-all duration-300 hover:scale-[1.02] ${
                 msg.role === 'user'
-                  ? 'bg-slate-800 text-white rounded-tr-sm'
-                  : 'bg-gradient-to-br from-rose-50 via-purple-50 to-slate-50 border border-rose-100 text-slate-800 rounded-tl-sm'
+                  ? 'bg-violet-100 text-slate-800 rounded-[1.5rem] rounded-br-sm hover:-rotate-1 origin-bottom-right'
+                  : 'bg-white border border-slate-100 text-slate-800 rounded-[1.5rem] rounded-tl-sm hover:rotate-1 origin-bottom-left'
               }`}
             >
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+              <p className="whitespace-pre-wrap">{msg.content}</p>
             </div>
           </div>
         ))}
 
         {operatorTyping && (
-          <div className="flex justify-start w-full">
-             <div className="bg-white border border-rose-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1">
-                <div className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          <div className="flex justify-start w-full animate-in fade-in slide-in-from-bottom-2">
+             <div className="bg-white border border-slate-100 rounded-[1.5rem] rounded-tl-sm px-5 py-4 shadow-sm flex items-center gap-1.5 w-fit">
+                <div className="w-2 h-2 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
              </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
-      <div className="p-4 bg-white border-t border-slate-100 shrink-0">
-        <form onSubmit={handleSubmit} className="relative flex items-center gap-2">
+      {/* Input Area - Floating Pill */}
+      <div className="p-4 pb-5 pt-0 bg-gradient-to-t from-[#fcfcfc] to-transparent shrink-0">
+        <form onSubmit={handleSubmit} className="relative flex items-center gap-2 shadow-2xl shadow-slate-200/60 rounded-[2rem] group hover:scale-[1.01] transition-transform">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Vent here..."
-            className="w-full pl-5 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition-all text-sm placeholder-slate-400"
+            placeholder="Type here..."
+            className="w-full pl-6 pr-14 py-4 bg-white border-2 border-white focus:border-rose-200 rounded-[2rem] focus:outline-none focus:ring-4 focus:ring-rose-50 transition-all text-base placeholder-slate-400 text-slate-800"
           />
           <button
             type="submit"
             disabled={!input.trim()}
-            className="absolute right-2 p-2 bg-gradient-to-r from-rose-500 to-purple-600 text-white rounded-xl hover:opacity-90 disabled:opacity-50 transition-all transform active:scale-95"
+            className="absolute right-2 top-2 bottom-2 w-12 bg-rose-400 text-white rounded-full hover:bg-rose-500 disabled:opacity-30 disabled:bg-slate-200 transition-all transform active:scale-90 flex items-center justify-center shadow-lg shadow-rose-200 hover:shadow-rose-300"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-5 h-5" />
           </button>
         </form>
       </div>

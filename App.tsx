@@ -34,78 +34,84 @@ const App: React.FC = () => {
     setMessages(prev => [...prev, newMessage]);
     
     // If user sent message, switch mobile view to operator to simulate "server side" receiving it
-    // In a real demo, you might want to stay on user view, but here we want to show the flow.
-    // For now, we just notify.
     if (role === 'user') {
        // Optionally play a sound or show a badge
     }
   };
 
   return (
-    <div className="h-full flex flex-col bg-slate-100">
-      {/* Application Header / View Switcher */}
-      <nav className="bg-white border-b border-slate-200 px-4 py-3 flex justify-between items-center shrink-0">
-        <div className="flex items-center gap-3">
-           <div className="w-9 h-9 bg-gradient-to-br from-rose-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md transform rotate-3 hover:rotate-0 transition-transform">
-              <Sparkles className="w-5 h-5 text-white" />
+    <div className="h-full flex flex-col bg-[#eef2f6] relative overflow-hidden">
+      {/* Abstract Background Blobs - Enhanced for "Glow" effect */}
+      <div className="absolute top-[-15%] left-[-15%] w-[50%] h-[50%] bg-rose-200/30 rounded-full blur-[80px] pointer-events-none animate-[pulse_8s_ease-in-out_infinite]" />
+      <div className="absolute bottom-[-15%] right-[-15%] w-[50%] h-[50%] bg-purple-200/30 rounded-full blur-[80px] pointer-events-none animate-[pulse_10s_ease-in-out_infinite]" />
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-white/40 blur-[100px] pointer-events-none" />
+
+      {/* Floating Navigation Pill */}
+      <nav className="z-50 absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/80 backdrop-blur-md shadow-lg border border-white/50 px-2 py-2 rounded-full flex items-center gap-2 shrink-0 hover:scale-105 transition-transform duration-300">
+        
+        <div className="flex items-center gap-2 px-4">
+           <div className="w-8 h-8 bg-gradient-to-br from-rose-400 to-violet-500 rounded-full flex items-center justify-center shadow-sm">
+              <Sparkles className="w-4 h-4 text-white" />
            </div>
-           <div>
-             <h1 className="font-bold text-slate-800 hidden sm:block tracking-tight text-lg">GlowUp <span className="text-rose-500 font-light">Chat</span></h1>
-           </div>
+           <span className="font-bold text-slate-700 tracking-tight text-sm hidden sm:block">GlowUp</span>
         </div>
 
-        <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-lg lg:hidden">
+        <div className="h-6 w-px bg-slate-200 mx-1"></div>
+
+        <div className="flex items-center bg-slate-100/50 rounded-full p-1">
           <button
             onClick={() => setActiveView('user')}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 ${
               activeView === 'user' 
-                ? 'bg-white text-rose-600 shadow-sm' 
+                ? 'bg-white text-slate-800 shadow-md transform scale-105' 
                 : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            <Smartphone className="w-4 h-4" />
-            User
+            <Smartphone className="w-3.5 h-3.5" />
+            Phone
           </button>
           <button
             onClick={() => setActiveView('operator')}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 ${
               activeView === 'operator' 
-                ? 'bg-white text-purple-600 shadow-sm' 
+                ? 'bg-slate-800 text-white shadow-md transform scale-105' 
                 : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            <Laptop2 className="w-4 h-4" />
-            Coach
+            <Laptop2 className="w-3.5 h-3.5" />
+            Console
             {messages.length > 0 && messages[messages.length-1].role === 'user' && (
-                <span className="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></span>
+                <span className="ml-1.5 w-1.5 h-1.5 bg-rose-400 rounded-full animate-pulse"></span>
             )}
           </button>
         </div>
-        
-        <div className="hidden lg:block text-sm text-slate-500">
-            <span className="bg-white px-3 py-1 rounded-full text-xs border border-slate-200 shadow-sm text-slate-400 font-medium tracking-wide">Active Session</span>
-        </div>
       </nav>
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-hidden relative p-4 lg:p-6 gap-6 flex bg-slate-100">
+      {/* Main Content Area - Modular Cards */}
+      <main className="flex-1 relative z-0 flex items-center justify-center p-4 pt-20 lg:p-8 gap-8 h-full">
         
-        {/* User Interface Pane */}
+        {/* User Interface Module - Styled like a Phone/Card */}
         <div className={`
-          flex-1 h-full transition-all duration-300 ease-in-out
-          ${activeView === 'user' ? 'block' : 'hidden lg:block'}
+          transition-all duration-700 cubic-bezier(0.34, 1.56, 0.64, 1)
+          ${activeView === 'user' 
+            ? 'opacity-100 translate-x-0 scale-100 absolute inset-4 pt-16 lg:static lg:inset-auto lg:pt-0 lg:w-[400px] xl:w-[450px] h-full max-h-[900px] rotate-0' 
+            : 'opacity-0 -translate-x-20 scale-90 absolute pointer-events-none lg:opacity-100 lg:translate-x-0 lg:scale-100 lg:static lg:pointer-events-auto lg:w-[400px] xl:w-[450px] h-full max-h-[900px]'}
         `}>
-          <UserInterface 
-            messages={messages} 
-            onSendMessage={(text) => addMessage('user', text)}
-            operatorTyping={operatorTyping}
-          />
+          <div className="h-full w-full shadow-2xl shadow-slate-200/50 rounded-[2.5rem] overflow-hidden border-[6px] border-white bg-white ring-1 ring-slate-200/50 transform transition-transform hover:scale-[1.005] duration-500 perspective-[1500px]">
+             <UserInterface 
+                messages={messages} 
+                onSendMessage={(text) => addMessage('user', text)}
+                operatorTyping={operatorTyping}
+              />
+          </div>
         </div>
 
-        {/* Operator Dashboard Pane */}
+        {/* Operator Dashboard Module - Styled like a Command Center */}
         <div className={`
-          flex-1 h-full transition-all duration-300 ease-in-out
-          ${activeView === 'operator' ? 'block' : 'hidden lg:block'}
+          flex-1 h-full max-h-[900px] transition-all duration-700 cubic-bezier(0.34, 1.56, 0.64, 1)
+          ${activeView === 'operator' 
+             ? 'opacity-100 translate-x-0 scale-100 absolute inset-4 pt-16 lg:static lg:inset-auto lg:pt-0' 
+             : 'opacity-0 translate-x-20 scale-90 absolute pointer-events-none lg:opacity-100 lg:translate-x-0 lg:scale-100 lg:static lg:pointer-events-auto'}
         `}>
           <OperatorDashboard 
             messages={messages}

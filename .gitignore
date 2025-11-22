@@ -22,6 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-localConfig
-localConfig.ts
-*.ts    # if you ever rename
