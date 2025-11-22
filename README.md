@@ -2,19 +2,18 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Run and deploy your AI Studio app
+# GlowUp Companion (Private Repository)
 
-This contains everything you need to run your app locally.
+This is the internal development repo for GlowUp Companion — a private, early-stage prototype of a warm, emotionally steady AI companion app.
 
-View your app in AI Studio: https://ai.studio/apps/drive/14w0EETe-GMuk5mUTd61dDm2EoxxV1YiW
+GlowUp’s core goals:
+- Provide a grounding, consistent conversational presence.
+- Reflect users’ thoughts back clearly, without judgment.
+- Support confidence, emotional stability, and self-understanding.
+- Deliver a calm, modern, AI-driven companionship experience.
 
-## Run Locally
+## Status
+This repo is **private** and **pre-MVP**. The UI, onboarding flows, and tone guidelines are actively evolving. None of the code, prompts, or flows here should be considered final.
 
-**Prerequisites:**  Node.js
+## Architecture (Early Layout)
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
