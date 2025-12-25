@@ -2,13 +2,15 @@
 import { GoogleGenAI } from "@google/genai";
 import { Message, SystemConfig } from "../types";
 
-// Initialize the client
+// Initialize the client following standard GenAI patterns
+// Note: In a production Vertex AI environment on GCP, authentication is typically handled via service accounts,
+// but we utilize the provided API_KEY bridge for this implementation.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-const FAST_MODEL = 'gemini-2.5-flash';
+const FAST_MODEL = 'gemini-2.0-flash';
 const THINKING_MODEL = 'gemini-3-pro-preview';
 
-// Regex patterns for routing logic
+// Patterns for routing to complex reasoning models (Thinking)
 const EMOTIONAL_PATTERNS = {
   selfDirected: /I feel|I don't know what's wrong|I'm scared|I messed up|I'm embarrassed|I'm stressed|I worry|I feel weird/i,
   socialConflict: /Someone said|Someone blocked|ignored me|ghosted me|hurt someone/i,
@@ -17,58 +19,38 @@ const EMOTIONAL_PATTERNS = {
   selfEsteem: /I hate|I don't feel like myself|I'm not enough/i,
 };
 
-const ADDITIONAL_EMOTIONAL_INDICATORS = [
-    "bad day",
-    "really bad day",
-    "tough day",
-    "rough day",
-    "awful day",
-    "terrible day",
-    "hard day",
-    "i'm not okay",
-    "i feel awful",
-    "i feel horrible",
-    "everything sucks",
-    "i'm overwhelmed",
-    "i'm stressed",
-    "i'm exhausted",
-    "i feel like shit"
+const EMOTIONAL_INDICATORS = [
+    "bad day", "really bad day", "tough day", "rough day", "awful day", 
+    "terrible day", "hard day", "i'm not okay", "i feel awful", "everything sucks"
 ];
 
 /**
- * Determines which model to use based on tags and text analysis.
+ * Determines which model to use based on message content and operator tags.
  */
 const determineModel = (text: string, tags: string[]) => {
-  // 1. Tag-based Routing
-  const criticalTags = ['safety', 'distress', 'boundary', 'risk', 'drift'];
-  const hasCriticalTag = tags.some(t => criticalTags.includes(t));
-  const hasHyperboleAndDistress = tags.includes('risk_lang') && tags.includes('distress');
-
-  if (hasCriticalTag || hasHyperboleAndDistress) {
-    return { useThinking: true, reason: 'Critical Tag Detected' };
+  // 1. Critical Safety/Risk Routing
+  const criticalTags = ['safety', 'distress', 'boundary', 'risk'];
+  if (tags.some(t => criticalTags.includes(t))) {
+    return { useThinking: true, reason: 'High-Risk Context' };
   }
 
-  // 2. Emotional Content Routing
-  const isEmotionalRegex = Object.values(EMOTIONAL_PATTERNS).some(regex => regex.test(text));
-  const hasEmotionalPhrase = ADDITIONAL_EMOTIONAL_INDICATORS.some(phrase => text.toLowerCase().includes(phrase));
-
-  if (isEmotionalRegex || hasEmotionalPhrase) {
-    return { useThinking: true, reason: 'Emotional Content Detected' };
+  // 2. Emotional Depth Analysis
+  const isEmotional = Object.values(EMOTIONAL_PATTERNS).some(regex => regex.test(text)) ||
+                    EMOTIONAL_INDICATORS.some(phrase => text.toLowerCase().includes(phrase));
+  if (isEmotional) {
+    return { useThinking: true, reason: 'Emotional Nuance Required' };
   }
 
-  // 3. Complexity/Length Routing
-  const isLong = text.length > 150;
-  // Heuristic: 3 or more sentences
-  const sentenceCount = (text.match(/[.!?]/g) || []).length;
-  if (isLong || sentenceCount > 2) {
+  // 3. Length/Complexity
+  if (text.length > 180 || (text.match(/[.!?]/g) || []).length > 2) {
     return { useThinking: true, reason: 'High Complexity' };
   }
 
-  return { useThinking: false, reason: 'Standard Request' };
+  return { useThinking: false, reason: 'Standard Interaction' };
 };
 
 /**
- * Generates a suggested response based on chat history and system instructions.
+ * Generates a suggested response using Vertex-grade models.
  */
 export const generateSuggestedResponse = async (
   history: Message[],
@@ -76,34 +58,26 @@ export const generateSuggestedResponse = async (
   activeTags: string[] = []
 ): Promise<{ text: string; modelType: 'fast' | 'thinking' }> => {
   try {
-    const lastMessage = history[history.length - 1];
-    const userText = lastMessage?.role === 'user' ? lastMessage.content : '';
+    const lastUserMessage = [...history].reverse().find(m => m.role === 'user');
+    const userText = lastUserMessage?.content || '';
     
     const { useThinking, reason } = determineModel(userText, activeTags);
-    
-    console.log(`[Routing] Using ${useThinking ? 'Thinking' : 'Fast'} Model. Reason: ${reason}`);
-
     const modelId = useThinking ? THINKING_MODEL : FAST_MODEL;
 
-    // Filter only approved messages and the pending one for context
-    const contents = history.map((msg) => {
-      const role = (msg.role === 'user' || msg.role === 'system') ? 'user' : 'model';
-      return {
-        role: role,
-        parts: [{ text: msg.content }],
-      };
-    });
+    const contents = history.map((msg) => ({
+      role: msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content }],
+    }));
 
     const requestConfig: any = {
       systemInstruction: config.systemInstruction,
       temperature: config.temperature,
     };
 
-    // Add Thinking Config if required
     if (useThinking) {
+      // Use max thinking budget for complex coaching tasks
       requestConfig.thinkingConfig = { thinkingBudget: 32768 };
-      // DO NOT set maxOutputTokens when using thinkingConfig
-    } 
+    }
 
     const response = await ai.models.generateContent({
       model: modelId,
@@ -116,9 +90,9 @@ export const generateSuggestedResponse = async (
         modelType: useThinking ? 'thinking' : 'fast' 
     };
   } catch (error) {
-    console.error("Error generating response:", error);
+    console.error("[GeminiService] Suggestion generation failed:", error);
     return { 
-        text: "Error: Could not generate a suggestion. Please check the API key or try again.",
+        text: "I'm having a quick moment to think. Could you try that again?",
         modelType: 'fast'
     };
   }
