@@ -551,7 +551,7 @@ const OperatorDashboard: React.FC<OperatorDashboardProps> = ({
                                 <div className={`max-w-[90%] rounded-2xl px-4 py-3 text-sm shadow-lg ${
                                     msg.role === 'user' 
                                     ? 'bg-slate-800 text-slate-200 border border-slate-700' 
-                                    : 'bg-rose-900/20 text-rose-200 border border-rose-500/20'
+                                    : 'bg-sky-900/20 text-sky-200 border border-sky-500/20'
                                 }`}>
                                     {msg.content}
                                 </div>
